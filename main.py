@@ -14,11 +14,11 @@ def main():
     country_data = load_csv_data(spark, source2)
 
     # Create Dimension Tables
-    player_dim = create_player_dim(spark, player_data)
-    olympic_dim = create_olympic_dim(spark, player_data)
-    country_dim = create_country_dim(spark, player_data, country_data)
-    sport_dim = create_sport_dim(spark, player_data)
-    event_dim = create_event_dim(spark, player_data, sport_dim)
+    player_dim = create_player_dim( player_data)
+    olympic_dim = create_olympic_dim(player_data)
+    country_dim = create_country_dim(player_data)
+    sport_dim = create_sport_dim(player_data)
+    event_dim = create_event_dim(player_data, sport_dim)
     medal_dim = create_medal_dim(spark, player_data)
 
     # Create Fact Tables

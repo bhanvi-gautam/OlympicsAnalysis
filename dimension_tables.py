@@ -3,7 +3,7 @@ from pyspark.sql import Window
 from pyspark.sql.functions import rank, row_number, col
 from pyspark.sql import functions as F
 
-def create_player_dim(spark, player_data):
+def create_player_dim(player_data):
     player_window = Window.orderBy("Player_Name", "Player_Age", "Player_Height")
     player_dim = player_data.select("Player_Name", "Player_Gender", "Player_Age", "Player_Height") \
         .distinct() \
@@ -11,7 +11,7 @@ def create_player_dim(spark, player_data):
         .select("Player_ID", "Player_Name", "Player_Gender", "Player_Age", "Player_Height")
     return player_dim
 
-def create_olympic_dim(spark, player_data):
+def create_olympic_dim(player_data):
     olympic_window = Window.orderBy("Olympic_Year")
     olympic_dim = player_data.select("Olympic_Name", "Olympic_Year", "Olympic_Season", "Olympic_City") \
         .distinct() \
@@ -19,19 +19,19 @@ def create_olympic_dim(spark, player_data):
         .select("Olympic_ID", "Olympic_Name", "Olympic_Year", "Olympic_Season", "Olympic_City")
     return olympic_dim
 
-def create_country_dim(spark, player_data, country_data):
+def create_country_dim(player_data):
     return player_data.select(
         col("Country_id").alias("Country Code"), 
         col("Country_Name").alias("Country Name")).distinct()
 
-def create_sport_dim(spark, player_data):
+def create_sport_dim(player_data):
     sport_dim = player_data.select("Sport_Name") \
         .distinct() \
         .withColumn("Sport_ID", row_number().over(Window.orderBy("Sport_Name"))) \
         .select("Sport_ID", "Sport_Name")
     return sport_dim
 
-def create_event_dim(spark, player_data, sport_dim):
+def create_event_dim(player_data, sport_dim):
     event_dim = player_data.select("Event_Name", "Sport_Name") \
         .distinct() \
         .join(sport_dim, "Sport_Name", "inner") \
